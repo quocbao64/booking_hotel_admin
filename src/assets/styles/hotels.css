@@ -1,0 +1,20 @@
+.tabled .ant-row {
+    display: block;
+}
+
+.ant-card {
+    padding: 16px !important;
+}
+
+.ant-form-item-control-input-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ant-form-item-control-input-content .ant-form-item {
+    width: calc(50% - 12px);
+}
+
+.form-btn > .ant-form-item-control-input-content {
+    justify-content: flex-start;
+}
