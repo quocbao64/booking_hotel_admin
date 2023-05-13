@@ -18,3 +18,21 @@
 .form-btn > .ant-form-item-control-input-content {
     justify-content: flex-start;
 }
+
+.ant-input-affix-wrapper {
+    max-height: 40px;
+}
+
+.ant-input-affix-wrapper input {
+    height: 100%;
+}
+
+.ant-picker,
+.ant-select-selector {
+    height: 40px !important;
+}
+
+.ant-select-selection-item {
+    display: flex;
+    align-items: center;
+}

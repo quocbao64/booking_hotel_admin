@@ -17,6 +17,7 @@ import { useHistory } from "react-router-dom";
 import moment from "moment";
 import { format } from "date-fns";
 import { da } from "date-fns/locale";
+import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -25,10 +26,10 @@ function Tables() {
     const [hotels, setHotels] = useState([]);
     const [rooms, setRooms] = useState([]);
     const history = useHistory();
-    const [quantity, setQuantity] = useState(Array.from({}, () => -1));
 
     const handleGetHotels = async () => {
         const response = await axios.get("http://localhost:3000/invoices");
+        console.log(response.data.data);
         setHotels(response.data.data);
     };
 
@@ -76,47 +77,18 @@ function Tables() {
             dataIndex: "room_quantity",
             key: "room_quantity",
             width: "10%",
-            render: (value, record) => (
-                <Input
-                    type="number"
-                    defaultValue={value}
-                    onChange={(e) => {
-                        const newQuantity = e.target.value;
-                        setUpdatedQuantity({ ...updatedQuantity, [record.key]: newQuantity });
-                        record.room_quantity = newQuantity;
-                    }}
-                />
-            ),
         },
         {
             title: "Ngày thuê",
             key: "r_date",
             dataIndex: "r_date",
-            render: (value, record) => (
-                <span>
-                    <DatePicker
-                        defaultValue={moment(value)}
-                        onChange={(date, dateString) =>
-                            (record.r_date = format(new Date(dateString), "yyyy-MM-dd"))
-                        }
-                    />
-                </span>
-            ),
+            render: (value, record) => <span>{format(new Date(value), "dd-MM-yyyy")}</span>,
         },
         {
-            title: "Ngày nhận",
+            title: "Ngày trả",
             key: "p_date",
             dataIndex: "p_date",
-            render: (value, record) => (
-                <span>
-                    <DatePicker
-                        defaultValue={moment(value)}
-                        onChange={(date, dateString) =>
-                            (record.p_date = format(new Date(dateString), "yyyy-MM-dd"))
-                        }
-                    />
-                </span>
-            ),
+            render: (value, record) => <span>{format(new Date(value), "dd-MM-yyyy")}</span>,
         },
         {
             title: "Giá",
@@ -138,11 +110,13 @@ function Tables() {
             key: "status",
             dataIndex: "status",
             render: (value, record) => (
-                <Select defaultValue={value} onChange={(e) => (record.status = e)}>
-                    <Option value="booked">Đã đặt</Option>
-                    <Option value="inprogress">Đang ở</Option>
-                    <Option value="paid">Đã thanh toán</Option>
-                </Select>
+                <span>
+                    {value === "booked"
+                        ? "Đã đặt"
+                        : value === "inprogress"
+                        ? "Đang ở"
+                        : "Đã thanh toán"}
+                </span>
             ),
         },
         {
@@ -152,32 +126,40 @@ function Tables() {
             render: (value, record) => (
                 <Button
                     type="primary"
-                    disabled={record.status === "paid" ? true : false}
                     onClick={async () => {
-                        record.room_quantity = updatedQuantity[record.key] || record.room_quantity;
-                        record.price = calculateNewPrice(
-                            record,
-                            updatedQuantity[record.key] || record.room_quantity
-                        );
-                        const response = await axios.patch(
-                            `http://localhost:3000/invoices/${value}`,
-                            record,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${user.token}`,
-                                },
-                            }
-                        );
-                        if (response.data.message === "update invoice successfully") {
-                            message.success("Cập nhật hóa đơn thành công");
-                            window.location.reload();
-                        }
+                        window.location.assign(`/orders/${record.key}`);
                     }}>
-                    Cập nhật
+                    Xem chi tiết
                 </Button>
             ),
         },
     ];
+
+    const [search, setSearch] = useState("");
+    let filterList = [];
+    const [dataFiltered, setDataFiltered] = useState(null);
+
+    useEffect(() => {}, [dataFiltered]);
+
+    const handleSearch = () => {
+        filterList = data.filter((item) =>
+            ["name", "price"].some((field) =>
+                item[field].toString().toLowerCase().includes(search.toLowerCase())
+            )
+        );
+        console.log(filterList);
+        setDataFiltered(filterList);
+    };
+
+    const handleClearInput = () => {
+        setSearch("");
+        setDataFiltered(null);
+    };
+
+    console.log(dataFiltered);
+
+    const noDataMessage = "Không có dữ liệu để hiển thị";
+    const noDataStyle = { fontWeight: "bold" };
 
     return (
         <>
@@ -187,13 +169,35 @@ function Tables() {
                         <Card
                             bordered={false}
                             className="criclebox tablespace mb-24"
-                            title="Danh sách phòng">
+                            title="Danh sách phòng"
+                            extra={
+                                <div style={{ display: "flex" }}>
+                                    <Input
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
+                                        placeholder="Nhập từ khóa"
+                                        style={{ marginRight: "10px" }}
+                                        suffix={
+                                            <CloseOutlined onClick={() => handleClearInput()} />
+                                        }
+                                    />
+                                    <Button
+                                        onClick={() => handleSearch()}
+                                        type="primary"
+                                        icon={<SearchOutlined />}>
+                                        Tìm kiếm
+                                    </Button>
+                                </div>
+                            }>
                             <div className="table-responsive">
                                 <Table
                                     columns={columns}
-                                    dataSource={data}
+                                    dataSource={dataFiltered === null ? data : dataFiltered}
                                     pagination={false}
                                     className="ant-border-space"
+                                    locale={{
+                                        emptyText: <span style={noDataStyle}>{noDataMessage}</span>,
+                                    }}
                                 />
                             </div>
                         </Card>

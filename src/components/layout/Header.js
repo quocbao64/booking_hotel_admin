@@ -131,9 +131,6 @@ function Header({ name, subName, onPress }) {
 
     return (
         <>
-            <div className="setting-drwer" onClick={showDrawer}>
-                {setting}
-            </div>
             <Row gutter={[24, 0]}>
                 <Col span={24} md={6}></Col>
                 <Col span={24} md={18} className="header-control">

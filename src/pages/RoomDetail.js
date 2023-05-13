@@ -1,4 +1,4 @@
-import { Row, Col, Card, Input, Form, Button, Upload, message } from "antd";
+import { Row, Col, Card, Input, Form, Button, Upload, message, Modal } from "antd";
 import { useEffect, useState } from "react";
 import "../assets/styles/hotels.css";
 import axios from "axios";
@@ -105,43 +105,94 @@ function HotelDetail() {
                 }
             }
             if (roomID !== "create") {
-                const response = await axios.patch(
-                    `http://localhost:3000/rooms/${roomID}`,
-                    formData,
-                    {
+                const response = await axios
+                    .patch(`http://localhost:3000/rooms/${roomID}`, formData, {
                         headers: { Authorization: `Bearer ${user.token}` },
-                    }
-                );
-                const response2 = await axios.patch(
-                    `http://localhost:3000/rooms/${roomID}`,
-                    values,
-                    {
+                    })
+                    .catch((err) => {
+                        if (err.response.status === 401) {
+                            message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                        } else {
+                            message.error("Lỗi không xác định");
+                        }
+                    });
+
+                const response2 = await axios
+                    .patch(`http://localhost:3000/rooms/${roomID}`, values, {
                         headers: { Authorization: `Bearer ${user.token}` },
-                    }
-                );
+                    })
+                    .catch((err) => {
+                        if (err.response.status === 401) {
+                            message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                        } else {
+                            message.error("Lỗi không xác định");
+                        }
+                    });
 
                 if (response.status === 204 && response2.status === 204) {
                     message.success("Cập nhật thành công");
+                    window.location.assign("/rooms");
                 }
             } else {
                 for (const key in values) {
                     formData.append(key, values[key]);
                 }
-                const response = await axios.post(`http://localhost:3000/rooms`, formData, {
-                    headers: {
-                        "content-type": "multipart/form-data",
-                        Authorization: `Bearer ${user.token}`,
-                    },
-                });
+                const response = await axios
+                    .post(`http://localhost:3000/rooms`, formData, {
+                        headers: {
+                            "content-type": "multipart/form-data",
+                            Authorization: `Bearer ${user.token}`,
+                        },
+                    })
+                    .catch((err) => {
+                        if (err.response.status === 401) {
+                            message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                        } else {
+                            message.error("Lỗi không xác định");
+                        }
+                    });
 
                 if (response.status === 201) {
                     message.success("Tạo phòng thành công");
+                    window.location.assign("/rooms");
                 }
             }
         } catch (error) {
             console.error(error);
         }
     };
+
+    const [visible, setVisible] = useState(false);
+
+    async function handleDelete() {
+        await axios
+            .delete(`http://localhost:3000/rooms/${roomID}`, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
+            .then((res) => {
+                console.log(res);
+                if (res.status === 200) {
+                    message.success("Xóa phòng thành công");
+                    setVisible(false);
+                    setTimeout(() => {
+                        window.location.assign("/rooms");
+                    }, 1500);
+                }
+            })
+            .catch((err) => {
+                if (err.response.status === 401) {
+                    message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                } else {
+                    message.error("Lỗi không xác định");
+                }
+            });
+    }
+
+    function handleCancel() {
+        setVisible(false);
+    }
 
     return (
         <>
@@ -264,9 +315,25 @@ function HotelDetail() {
                                         </ImgCrop>
                                     </Form.Item>
 
-                                    <Button htmlType="submit" type="primary">
-                                        Sửa thông tin
-                                    </Button>
+                                    <div style={{ marginBottom: "30px" }}>
+                                        <Button
+                                            type="primary"
+                                            style={{ marginRight: "20px" }}
+                                            danger
+                                            onClick={() => setVisible(true)}>
+                                            Xóa phòng
+                                        </Button>
+                                        <Modal
+                                            title="Bạn có chắc chắn muốn xóa?"
+                                            visible={visible}
+                                            onOk={handleDelete}
+                                            onCancel={handleCancel}>
+                                            <p>Hành động này không thể hoàn tác</p>
+                                        </Modal>
+                                        <Button htmlType="submit" type="primary">
+                                            Sửa thông tin
+                                        </Button>
+                                    </div>
                                 </Form>
                             </Card>
                         </Card>

@@ -7,16 +7,20 @@ import logout from "../components/utils/logout";
 import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
 
 function Tables() {
-    const [users, setUsers] = useState([]);
+    const [staffs, setStaffs] = useState([]);
     const history = useHistory();
 
     const handleGetUsers = async () => {
         try {
-            const response = await axios
+            await axios
                 .get("http://localhost:3000/users", {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
+                })
+                .then((res) => {
+                    const users = res.data.data;
+                    setStaffs(users.filter((i) => i.user_role === 2));
                 })
                 .catch((err) => {
                     if (err.response.status === 401) {
@@ -25,7 +29,6 @@ function Tables() {
                         message.error("Lỗi không xác định");
                     }
                 });
-            setUsers(response.data.data);
         } catch (err) {
             if (err.response.status === 401) {
                 console.log(err);
@@ -73,7 +76,7 @@ function Tables() {
                 <Button
                     type="primary"
                     onClick={() => {
-                        history.push(`/users/${value}`);
+                        history.push(`/staffs/${value}`);
                     }}>
                     Chỉnh sửa
                 </Button>
@@ -81,7 +84,7 @@ function Tables() {
         },
     ];
 
-    const data = users.map((e) => {
+    const data = staffs.map((e) => {
         return {
             key: e.user_uuid,
             email: e.user_email,
@@ -98,7 +101,7 @@ function Tables() {
     useEffect(() => {}, [dataFiltered]);
 
     const handleSearch = () => {
-        filterList = users.filter((item) =>
+        filterList = staffs.filter((item) =>
             ["user_email", "user_name", "user_phone"].some((field) =>
                 item[field].toLowerCase().includes(search.toLowerCase())
             )

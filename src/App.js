@@ -13,6 +13,10 @@ import Orders from "./pages/Orders";
 import ForbiddenPage from "./pages/403";
 import Users from "./pages/Users";
 import UserDetail from "./pages/UserDetail";
+import OrderDetail from "./pages/OrderDetail";
+import Staffs from "./pages/Staffs";
+import StaffDetail from "./pages/StaffDetail";
+import Services from "./pages/Services";
 
 function App() {
     return (
@@ -26,7 +30,11 @@ function App() {
                     <PrivateRoute exact path="/rooms/:roomID" component={HotelDetail} />
                     <PrivateRoute exact path="/users" component={Users} />
                     <PrivateRoute exact path="/users/:userID" component={UserDetail} />
+                    <PrivateRoute exact path="/staffs" component={Staffs} />
+                    <PrivateRoute exact path="/staffs/staffID" component={StaffDetail} />
+                    <PrivateRoute exact path="/services" component={Services} />
                     <StaffRoute exact path="/orders" component={Orders} />
+                    <StaffRoute exact path="/orders/:orderID" component={OrderDetail} />
                     <Route path="/403" exact component={ForbiddenPage} />
                 </Main>
             </Switch>

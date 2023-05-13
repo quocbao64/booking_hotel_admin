@@ -1,0 +1,3 @@
+.service-table .ant-table-tbody > .ant-table-row > .ant-table-cell:nth-child(3) {
+    text-align: right;
+}

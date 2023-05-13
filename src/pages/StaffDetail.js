@@ -1,4 +1,4 @@
-import { Row, Col, Card, Input, Form, Button, Upload, message, Select, Modal } from "antd";
+import { Row, Col, Card, Input, Form, Button, Upload, message, Select } from "antd";
 import { useEffect, useState } from "react";
 import "../assets/styles/hotels.css";
 import axios from "axios";
@@ -11,7 +11,7 @@ function HotelDetail() {
     const [fileListSlide, setFileListSlide] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"));
     const { Option } = Select;
-    const { userID } = useParams();
+    const { staffID } = useParams();
 
     const onChangeSlide = ({ fileList: newFileList }) => {
         setFileListSlide(newFileList);
@@ -55,7 +55,7 @@ function HotelDetail() {
 
     const handleGetHotel = async () => {
         const response = await axios
-            .get(`http://localhost:3000/users/${userID}`, {
+            .get(`http://localhost:3000/staffs/${staffID}`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
@@ -99,7 +99,7 @@ function HotelDetail() {
                 formData.append(key, values[key]);
             }
             const response = await axios
-                .patch(`http://localhost:3000/users/${userID}`, values, {
+                .patch(`http://localhost:3000/staffs/${staffID}`, values, {
                     headers: { Authorization: `Bearer ${user.token}` },
                 })
                 .catch((err) => {
@@ -111,44 +111,12 @@ function HotelDetail() {
                 });
             if (response.status === 200) {
                 message.success("Cập nhật thành công");
-                window.location.assign("/users");
+                window.location.assign("/staffs");
             }
         } catch (error) {
             console.error(error);
         }
     };
-
-    const [visible, setVisible] = useState(false);
-
-    async function handleDelete() {
-        await axios
-            .delete(`http://localhost:3000/users/${userID}`, {
-                headers: {
-                    Authorization: `Bearer ${user.token}`,
-                },
-            })
-            .then((res) => {
-                console.log(res);
-                if (res.status === 200) {
-                    message.success("Xóa tài khoản thành công");
-                    setVisible(false);
-                    setTimeout(() => {
-                        window.location.assign("/users");
-                    }, 1500);
-                }
-            })
-            .catch((err) => {
-                if (err.response.status === 401) {
-                    message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
-                } else {
-                    message.error("Lỗi không xác định");
-                }
-            });
-    }
-
-    function handleCancel() {
-        setVisible(false);
-    }
 
     return (
         <>
@@ -158,7 +126,7 @@ function HotelDetail() {
                         <Card
                             bordered={false}
                             className="criclebox tablespace mb-24"
-                            title="Chỉnh sửa thông tin người dùng">
+                            title="Chỉnh sửa thông tin nhân viên">
                             <Card>
                                 <Form form={form} layout="vertical" onFinish={onFinish}>
                                     <Form.Item style={{ marginBottom: 0 }}>
@@ -206,25 +174,9 @@ function HotelDetail() {
                                         </Form.Item>
                                     </Form.Item>
 
-                                    <div style={{ marginBottom: "30px" }}>
-                                        <Button
-                                            type="primary"
-                                            style={{ marginRight: "20px" }}
-                                            danger
-                                            onClick={() => setVisible(true)}>
-                                            Xóa tài khoản
-                                        </Button>
-                                        <Modal
-                                            title="Bạn có chắc chắn muốn xóa?"
-                                            visible={visible}
-                                            onOk={handleDelete}
-                                            onCancel={handleCancel}>
-                                            <p>Hành động này không thể hoàn tác</p>
-                                        </Modal>
-                                        <Button htmlType="submit" type="primary">
-                                            Sửa thông tin
-                                        </Button>
-                                    </div>
+                                    <Button htmlType="submit" type="primary">
+                                        Sửa thông tin
+                                    </Button>
                                 </Form>
                             </Card>
                         </Card>

@@ -9,11 +9,12 @@
 =========================================================
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-import { Row, Col, Card, Table, message, Button, Typography } from "antd";
+import { Row, Col, Card, Table, message, Button, Typography, Input } from "antd";
 import { useEffect, useState } from "react";
 import "../assets/styles/hotels.css";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
@@ -116,6 +117,43 @@ function Tables() {
         history.push("/rooms/create");
     };
 
+    const [search, setSearch] = useState("");
+    let filterList = [];
+    const [dataFiltered, setDataFiltered] = useState(null);
+
+    useEffect(() => {}, [dataFiltered]);
+
+    const handleSearch = () => {
+        filterList = hotels.filter((item) =>
+            ["room_desc", "room_area", "room_name", "room_price"].some((field) =>
+                item[field].toString().toLowerCase().includes(search.toLowerCase())
+            )
+        );
+        console.log(filterList);
+        setDataFiltered(
+            filterList.map((e) => {
+                return {
+                    key: e.room_id,
+                    name: e.room_name,
+                    bed: e.room_beds,
+                    area: e.room_area,
+                    people: e.room_num_people,
+                    desc: e.room_desc,
+                    price: e.room_price,
+                    surcharge: e.room_surcharge,
+                };
+            })
+        );
+    };
+
+    const handleClearInput = () => {
+        setSearch("");
+        setDataFiltered(null);
+    };
+
+    const noDataMessage = "Không có dữ liệu để hiển thị";
+    const noDataStyle = { fontWeight: "bold" };
+
     return (
         <>
             <div className="tabled">
@@ -126,16 +164,39 @@ function Tables() {
                             className="criclebox tablespace mb-24"
                             title="Danh sách phòng"
                             extra={
-                                <Button type="primary" onClick={() => handleCreateRoom()}>
-                                    Tạo phòng
-                                </Button>
+                                <div style={{ display: "flex" }}>
+                                    <Input
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
+                                        placeholder="Nhập từ khóa"
+                                        style={{ marginRight: "10px" }}
+                                        suffix={
+                                            <CloseOutlined onClick={() => handleClearInput()} />
+                                        }
+                                    />
+                                    <Button
+                                        onClick={() => handleSearch()}
+                                        style={{ marginRight: "10px" }}
+                                        type="primary"
+                                        icon={<SearchOutlined />}>
+                                        Tìm kiếm
+                                    </Button>
+                                    <Button type="primary" onClick={() => handleCreateRoom()}>
+                                        Tạo phòng
+                                    </Button>
+                                </div>
                             }>
                             <div className="table-responsive">
                                 <Table
                                     columns={columns}
-                                    dataSource={data}
+                                    dataSource={
+                                        dataFiltered === null && search === "" ? data : dataFiltered
+                                    }
                                     pagination={false}
                                     className="ant-border-space"
+                                    locale={{
+                                        emptyText: <span style={noDataStyle}>{noDataMessage}</span>,
+                                    }}
                                 />
                             </div>
                         </Card>

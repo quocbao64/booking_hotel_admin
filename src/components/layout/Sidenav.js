@@ -170,7 +170,31 @@ function Sidenav({ color }) {
                             }}>
                             {billing}
                         </span>
-                        <span className="label">Người dùng</span>
+                        <span className="label">Tài khoản</span>
+                    </NavLink>
+                </Menu.Item>
+                <Menu.Item key="4">
+                    <NavLink to="/staffs">
+                        <span
+                            className="icon"
+                            style={{
+                                background: page === "billing" ? color : "",
+                            }}>
+                            {billing}
+                        </span>
+                        <span className="label">Nhân viên</span>
+                    </NavLink>
+                </Menu.Item>
+                <Menu.Item key="4">
+                    <NavLink to="/services">
+                        <span
+                            className="icon"
+                            style={{
+                                background: page === "billing" ? color : "",
+                            }}>
+                            {billing}
+                        </span>
+                        <span className="label">Dịch vụ</span>
                     </NavLink>
                 </Menu.Item>
             </Menu>
