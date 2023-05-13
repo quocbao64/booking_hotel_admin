@@ -24,7 +24,7 @@ function Tables() {
                 })
                 .catch((err) => {
                     if (err.response.status === 401) {
-                        message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                        logout();
                     } else {
                         message.error("Lỗi không xác định");
                     }

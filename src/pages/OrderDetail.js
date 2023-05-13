@@ -6,6 +6,7 @@ import ImgCrop from "antd-img-crop";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { format } from "date-fns";
+import logout from "../components/utils/logout";
 
 function OrderDetail() {
     const [hotel, setHotel] = useState();
@@ -32,7 +33,7 @@ function OrderDetail() {
             })
             .catch((err) => {
                 if (err.response.status === 401) {
-                    message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                    logout();
                 } else {
                     message.error("Lỗi không xác định");
                 }
@@ -81,7 +82,7 @@ function OrderDetail() {
                 })
                 .catch((err) => {
                     if (err.response.status === 401) {
-                        message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                        logout();
                     } else {
                         message.error("Lỗi không xác định");
                     }

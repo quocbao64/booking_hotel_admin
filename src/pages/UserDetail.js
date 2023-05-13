@@ -4,6 +4,7 @@ import "../assets/styles/hotels.css";
 import axios from "axios";
 import ImgCrop from "antd-img-crop";
 import { useParams } from "react-router-dom";
+import logout from "../components/utils/logout";
 
 function HotelDetail() {
     const [hotel, setHotel] = useState();
@@ -62,7 +63,7 @@ function HotelDetail() {
             })
             .catch((err) => {
                 if (err.response.status === 401) {
-                    message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                    logout();
                 } else {
                     message.error("Lỗi không xác định");
                 }
@@ -104,7 +105,7 @@ function HotelDetail() {
                 })
                 .catch((err) => {
                     if (err.response.status === 401) {
-                        message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                        logout();
                     } else {
                         message.error("Lỗi không xác định");
                     }
@@ -139,7 +140,7 @@ function HotelDetail() {
             })
             .catch((err) => {
                 if (err.response.status === 401) {
-                    message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                    logout();
                 } else {
                     message.error("Lỗi không xác định");
                 }

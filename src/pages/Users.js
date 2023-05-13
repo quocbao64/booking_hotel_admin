@@ -11,27 +11,22 @@ function Tables() {
     const history = useHistory();
 
     const handleGetUsers = async () => {
-        try {
-            const response = await axios
-                .get("http://localhost:3000/users", {
-                    headers: {
-                        Authorization: `Bearer ${user.token}`,
-                    },
-                })
-                .catch((err) => {
-                    if (err.response.status === 401) {
-                        message.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
-                    } else {
-                        message.error("Lỗi không xác định");
-                    }
-                });
-            setUsers(response.data.data);
-        } catch (err) {
-            if (err.response.status === 401) {
-                console.log(err);
-                logout();
-            }
-        }
+        await axios
+            .get("http://localhost:3000/users", {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            })
+            .then((res) => {
+                setUsers(res.data.data);
+            })
+            .catch((err) => {
+                if (err.response.status === 401) {
+                    logout();
+                } else {
+                    message.error("Lỗi không xác định");
+                }
+            });
     };
 
     useEffect(() => {
