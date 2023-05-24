@@ -31,7 +31,7 @@ function App() {
                     <PrivateRoute exact path="/users" component={Users} />
                     <PrivateRoute exact path="/users/:userID" component={UserDetail} />
                     <PrivateRoute exact path="/staffs" component={Staffs} />
-                    <PrivateRoute exact path="/staffs/staffID" component={StaffDetail} />
+                    <PrivateRoute exact path="/staffs/:staffID" component={StaffDetail} />
                     <PrivateRoute exact path="/services" component={Services} />
                     <StaffRoute exact path="/orders" component={Orders} />
                     <StaffRoute exact path="/orders/:orderID" component={OrderDetail} />

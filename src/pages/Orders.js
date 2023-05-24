@@ -18,6 +18,7 @@ import moment from "moment";
 import { format } from "date-fns";
 import { da } from "date-fns/locale";
 import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
+import logout from "../components/utils/logout";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -25,11 +26,28 @@ const { Option } = Select;
 function Tables() {
     const [hotels, setHotels] = useState([]);
     const [rooms, setRooms] = useState([]);
+    const [users, setUsers] = useState([]);
     const history = useHistory();
 
     const handleGetHotels = async () => {
         const response = await axios.get("http://localhost:3000/invoices");
-        console.log(response.data.data);
+        await axios
+            .get("http://localhost:3000/users", {
+                headers: {
+                    Authorization: `Bearer ${user?.token}`,
+                },
+            })
+            .then((res) => {
+                setUsers(res.data.data);
+            })
+            .catch((err) => {
+                if (err.response.status === 401) {
+                    logout();
+                } else {
+                    message.error("Lỗi không xác định");
+                }
+            });
+
         setHotels(response.data.data);
     };
 
@@ -57,6 +75,7 @@ function Tables() {
         return {
             key: e.invoice_id,
             name: rooms.filter((i) => i.room_id === e.room_id)[0]?.room_name,
+            user: users.filter((i) => i.user_uuid === e.user_uuid)[0]?.user_email,
             r_date: e.r_date,
             p_date: e.p_date,
             price: e.price,
@@ -77,6 +96,11 @@ function Tables() {
             dataIndex: "room_quantity",
             key: "room_quantity",
             width: "10%",
+        },
+        {
+            title: "Người thuê",
+            key: "user",
+            dataIndex: "user",
         },
         {
             title: "Ngày thuê",
@@ -142,12 +166,11 @@ function Tables() {
     useEffect(() => {}, [dataFiltered]);
 
     const handleSearch = () => {
-        filterList = data.filter((item) =>
-            ["name", "price"].some((field) =>
-                item[field].toString().toLowerCase().includes(search.toLowerCase())
-            )
-        );
-        console.log(filterList);
+        filterList = data.filter((item) => {
+            return ["name"].some((field) => {
+                return item[field]?.toLowerCase().includes(search?.toString().toLowerCase());
+            });
+        });
         setDataFiltered(filterList);
     };
 
@@ -156,10 +179,12 @@ function Tables() {
         setDataFiltered(null);
     };
 
-    console.log(dataFiltered);
-
     const noDataMessage = "Không có dữ liệu để hiển thị";
     const noDataStyle = { fontWeight: "bold" };
+
+    const handleCreateInvoice = () => {
+        history.push("/orders/create");
+    };
 
     return (
         <>
@@ -169,7 +194,7 @@ function Tables() {
                         <Card
                             bordered={false}
                             className="criclebox tablespace mb-24"
-                            title="Danh sách phòng"
+                            title="Danh sách đơn đặt phòng"
                             extra={
                                 <div style={{ display: "flex" }}>
                                     <Input
@@ -184,8 +209,12 @@ function Tables() {
                                     <Button
                                         onClick={() => handleSearch()}
                                         type="primary"
+                                        style={{ marginRight: "20px" }}
                                         icon={<SearchOutlined />}>
                                         Tìm kiếm
+                                    </Button>
+                                    <Button type="primary" onClick={() => handleCreateInvoice()}>
+                                        Đăng ký phòng
                                     </Button>
                                 </div>
                             }>

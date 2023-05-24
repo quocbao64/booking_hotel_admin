@@ -119,10 +119,9 @@ function Sidenav({ color }) {
 
     return (
         <>
-            <div className="brand">
-                <img src={logo} alt="" />
-                <span>Rooms Admin</span>
-            </div>
+            <a href="/" className="brand">
+                <img src={logo} style={{ height: "auto", marginLeft: "16px" }} alt="" />
+            </a>
             <hr />
             <Menu theme="light" mode="inline">
                 <Menu.Item key="1">

@@ -127,7 +127,7 @@ function Tables() {
                         <Card
                             bordered={false}
                             className="criclebox tablespace mb-24"
-                            title="Danh sách người dùng"
+                            title="Danh sách tài khoản"
                             extra={
                                 <div style={{ display: "flex" }}>
                                     <Input

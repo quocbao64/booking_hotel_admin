@@ -5,6 +5,7 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import logout from "../components/utils/logout";
 import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
+import { format } from "date-fns";
 
 function Tables() {
     const [staffs, setStaffs] = useState([]);
@@ -13,14 +14,14 @@ function Tables() {
     const handleGetUsers = async () => {
         try {
             await axios
-                .get("http://localhost:3000/users", {
+                .get("http://localhost:3000/staffs", {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
                 })
                 .then((res) => {
                     const users = res.data.data;
-                    setStaffs(users.filter((i) => i.user_role === 2));
+                    setStaffs(users);
                 })
                 .catch((err) => {
                     if (err.response.status === 401) {
@@ -46,19 +47,42 @@ function Tables() {
     // table code start
     const columns = [
         {
-            title: "Email",
-            dataIndex: "email",
-            key: "email",
-        },
-        {
             title: "Tên người dùng",
             dataIndex: "name",
             key: "name",
         },
         {
-            title: "Số điện thoại",
-            key: "phone",
-            dataIndex: "phone",
+            title: "Giới tính",
+            key: "gender",
+            dataIndex: "gender",
+        },
+        {
+            title: "Ngày sinh",
+            key: "birthday",
+            dataIndex: "birthday",
+            render: (value, record) => <span>{format(new Date(value), "dd-MM-yyyy")}</span>,
+        },
+        {
+            title: "Số CMND",
+            key: "person_id",
+            dataIndex: "person_id",
+        },
+        {
+            title: "Vị trí",
+            key: "position",
+            dataIndex: "position",
+        },
+        {
+            title: "Lương",
+            key: "salary",
+            dataIndex: "salary",
+            render: (value, record) => (
+                <span>
+                    {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
+                        value
+                    )}
+                </span>
+            ),
         },
         {
             title: "Vai trò",
@@ -86,11 +110,14 @@ function Tables() {
 
     const data = staffs.map((e) => {
         return {
-            key: e.user_uuid,
-            email: e.user_email,
-            name: e.user_name,
-            phone: e.user_phone,
+            key: e.staff_id,
+            birthday: e.birthday,
+            name: e.name,
+            gender: e.gender,
             role: e.user_role,
+            position: e.position,
+            salary: e.salary,
+            person_id: e.person_id,
         };
     });
 
@@ -127,6 +154,10 @@ function Tables() {
     const noDataMessage = "Không có dữ liệu để hiển thị";
     const noDataStyle = { fontWeight: "bold" };
 
+    const handleCreateStaff = () => {
+        history.push("/staffs/create");
+    };
+
     return (
         <>
             <div className="tabled">
@@ -135,7 +166,7 @@ function Tables() {
                         <Card
                             bordered={false}
                             className="criclebox tablespace mb-24"
-                            title="Danh sách người dùng"
+                            title="Danh sách nhân viên"
                             extra={
                                 <div style={{ display: "flex" }}>
                                     <Input
@@ -150,8 +181,12 @@ function Tables() {
                                     <Button
                                         onClick={() => handleSearch()}
                                         type="primary"
+                                        style={{ marginRight: "20px" }}
                                         icon={<SearchOutlined />}>
                                         Tìm kiếm
+                                    </Button>
+                                    <Button type="primary" onClick={() => handleCreateStaff()}>
+                                        Tạo nhân viên
                                     </Button>
                                 </div>
                             }>

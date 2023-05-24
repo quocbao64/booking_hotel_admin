@@ -48,12 +48,24 @@ function Tables() {
             key: "service_name",
         },
         {
+            title: "Giá",
+            key: "service_price",
+            dataIndex: "service_price",
+            render: (value, record) => (
+                <span>
+                    {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
+                        value
+                    )}
+                </span>
+            ),
+        },
+        {
             title: "",
-            key: "key",
-            dataIndex: "key",
+            key: "service_id",
+            dataIndex: "service_id",
             render: (value, record) => (
                 <>
-                    <Button type="primary" onClick={() => handleClickUpdate(value)}>
+                    <Button type="primary" onClick={() => handleClickUpdate(record.key)}>
                         Chỉnh sửa
                     </Button>
                     <Button
@@ -72,9 +84,13 @@ function Tables() {
     const [visibleUpdate, setVisibleUpdate] = useState(false);
     const [currentKeyUpdate, setCurrentKeyUpdate] = useState(null);
     const [serviceName, setServiceName] = useState("");
+    const [servicePrice, setServicePrice] = useState();
 
     const handleClickUpdate = (key) => {
+        console.log(key);
+        console.log(data);
         setServiceName(data[key]?.service_name);
+        setServicePrice(data[key].service_price);
         setCurrentKeyUpdate(key);
         setVisibleUpdate(true);
     };
@@ -83,6 +99,7 @@ function Tables() {
         await axios
             .patch(`http://localhost:3000/services/${id}`, {
                 service_name: serviceName,
+                service_price: servicePrice,
             })
             .then((res) => {
                 if (res.status === 204) {
@@ -105,9 +122,10 @@ function Tables() {
     // create
     const [visibleCreate, setVisibleCreate] = useState(false);
     const [serviceNameCreate, setServiceNameCreate] = useState("");
+    const [servicePriceCreate, setServicePriceCreate] = useState();
 
     const handleClickCreate = () => {
-        setVisibleUpdate(true);
+        setVisibleCreate(true);
     };
 
     function handleCancelCreate() {
@@ -118,6 +136,7 @@ function Tables() {
         await axios
             .post("http://localhost:3000/services", {
                 service_name: serviceNameCreate,
+                service_price: servicePriceCreate,
             })
             .then((res) => {
                 console.log(res);
@@ -139,7 +158,7 @@ function Tables() {
         await axios
             .delete(`http://localhost:3000/services/${id}`)
             .then((res) => {
-                if (res.status === 201) {
+                if (res.status === 204) {
                     message.success("Xóa dịch vụ thành công");
                     setVisibleCreate(false);
                     setTimeout(() => {
@@ -157,6 +176,7 @@ function Tables() {
             key: id,
             service_id: e.service_id,
             service_name: e.service_name,
+            service_price: e.service_price,
         };
     });
 
@@ -168,7 +188,7 @@ function Tables() {
 
     const handleSearch = () => {
         filterList = services.filter((item) =>
-            ["user_email", "user_name", "user_phone"].some((field) =>
+            ["service_name", "service_price"].some((field) =>
                 item[field].toLowerCase().includes(search.toLowerCase())
             )
         );
@@ -198,7 +218,7 @@ function Tables() {
                         <Card
                             bordered={false}
                             className="criclebox tablespace mb-24"
-                            title="Danh sách người dùng"
+                            title="Danh sách dịch vụ"
                             extra={
                                 <div style={{ display: "flex" }}>
                                     <Input
@@ -222,16 +242,25 @@ function Tables() {
                                             Tạo dịch vụ
                                         </Button>
                                         <Modal
-                                            title="Chỉnh sửa dịch vụ"
+                                            title="Tạo dịch vụ"
                                             visible={visibleCreate}
                                             onOk={() => handleCreate()}
                                             onCancel={handleCancelCreate}>
                                             <label>Tên dịch vụ</label>
                                             <Input
-                                                style={{ marginTop: "10px" }}
+                                                style={{ marginTop: "5px", marginBottom: "20px" }}
                                                 value={serviceNameCreate}
                                                 onChange={(e) =>
                                                     setServiceNameCreate(e.target.value)
+                                                }
+                                            />
+                                            <label>Giá</label>
+                                            <Input
+                                                type="number"
+                                                style={{ marginTop: "5px" }}
+                                                value={servicePriceCreate}
+                                                onChange={(e) =>
+                                                    setServicePriceCreate(e.target.value)
                                                 }
                                             />
                                         </Modal>
@@ -255,9 +284,16 @@ function Tables() {
                                     onCancel={handleCancelUpdate}>
                                     <label>Tên dịch vụ</label>
                                     <Input
-                                        style={{ marginTop: "10px" }}
+                                        style={{ marginTop: "5px", marginBottom: "20px" }}
                                         value={serviceName}
                                         onChange={(e) => setServiceName(e.target.value)}
+                                    />
+                                    <label>Giá</label>
+                                    <Input
+                                        type="number"
+                                        style={{ marginTop: "5px" }}
+                                        value={servicePrice}
+                                        onChange={(e) => setServicePrice(e.target.value)}
                                     />
                                 </Modal>
                             </div>

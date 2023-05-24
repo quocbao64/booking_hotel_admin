@@ -159,7 +159,7 @@ function HotelDetail() {
                         <Card
                             bordered={false}
                             className="criclebox tablespace mb-24"
-                            title="Chỉnh sửa thông tin người dùng">
+                            title="Chỉnh sửa tài khoản">
                             <Card>
                                 <Form form={form} layout="vertical" onFinish={onFinish}>
                                     <Form.Item style={{ marginBottom: 0 }}>

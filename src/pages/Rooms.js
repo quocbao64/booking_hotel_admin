@@ -41,7 +41,7 @@ const columns = [
         dataIndex: "desc",
     },
     {
-        title: "Khu vực phòng",
+        title: "Diện tích phòng",
         key: "area",
         dataIndex: "area",
     },

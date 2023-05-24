@@ -115,13 +115,10 @@ const setting = [
 ];
 
 function Header({ name, subName, onPress }) {
-    const [visible, setVisible] = useState(false);
     const user = JSON.parse(localStorage.getItem("user"));
     const history = useHistory();
 
     useEffect(() => window.scrollTo(0, 0));
-
-    const showDrawer = () => setVisible(true);
 
     const handleSignOut = () => {
         localStorage.removeItem("isLoggedIn");
@@ -140,11 +137,6 @@ function Header({ name, subName, onPress }) {
                     {user !== null && user !== undefined ? (
                         <Button onClick={() => handleSignOut()}>Đăng xuất</Button>
                     ) : null}
-                    <Input
-                        className="header-search"
-                        placeholder="Tìm kiếm"
-                        prefix={<SearchOutlined />}
-                    />
                 </Col>
             </Row>
         </>
