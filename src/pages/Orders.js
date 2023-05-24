@@ -75,12 +75,12 @@ function Tables() {
         return {
             key: e.invoice_id,
             name: rooms.filter((i) => i.room_id === e.room_id)[0]?.room_name,
-            user: users.filter((i) => i.user_uuid === e.user_uuid)[0]?.user_email,
             r_date: e.r_date,
             p_date: e.p_date,
             price: e.price,
             status: e.status,
             room_quantity: e.room_quantity,
+            email: e.email,
         };
     });
 
@@ -98,9 +98,9 @@ function Tables() {
             width: "10%",
         },
         {
-            title: "Người thuê",
-            key: "user",
-            dataIndex: "user",
+            title: "Email người thuê",
+            key: "email",
+            dataIndex: "email",
         },
         {
             title: "Ngày thuê",

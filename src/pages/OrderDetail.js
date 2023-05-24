@@ -30,6 +30,7 @@ function OrderDetail() {
     const [p_date, setPDate] = useState(new Date());
     const [status, setStatus] = useState();
     const [rooms, setRooms] = useState([]);
+    const [email, setEmail] = useState();
 
     const handleGetRooms = async () => {
         const response = await axios.get(`http://localhost:3000/rooms/`);
@@ -57,6 +58,7 @@ function OrderDetail() {
         setStatus(res.status);
         setPrice(res.price);
         setQuantity(res.room_quantity);
+        setEmail(res.email);
     };
 
     useEffect(() => {
@@ -84,8 +86,9 @@ function OrderDetail() {
                 status,
                 r_date,
                 p_date,
-                room_id: hotel.room_id,
+                room_id: roomSelected,
                 room_quantity: quantity,
+                email,
             };
             console.log(params);
             try {
@@ -102,7 +105,9 @@ function OrderDetail() {
                     });
                 if (response.status === 200) {
                     message.success("Cập nhật thành công");
-                    window.location.assign("/orders");
+                    setTimeout(() => {
+                        window.location.assign("/orders");
+                    }, 2000);
                 }
             } catch (error) {
                 console.error(error);
@@ -116,6 +121,7 @@ function OrderDetail() {
                 room_id: roomSelected,
                 room_quantity: 1,
                 user_uuid: user.user.uuid,
+                email,
             };
             console.log(params);
             try {
@@ -202,20 +208,22 @@ function OrderDetail() {
                             <Card>
                                 <Form form={form} layout="vertical" onFinish={onFinish}>
                                     <Form.Item style={{ marginBottom: 0 }}>
+                                        <Form.Item label="Email khách hàng">
+                                            <Input
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                            />
+                                        </Form.Item>
                                         <Form.Item name="room_name" label="Tên phòng">
-                                            {orderID !== "create" ? (
-                                                <Input disabled />
-                                            ) : (
-                                                <Select
-                                                    options={rooms?.map((room) => {
-                                                        return {
-                                                            value: room.room_id,
-                                                            label: "Phòng " + room.room_name,
-                                                        };
-                                                    })}
-                                                    onChange={handleChangeRoom}
-                                                />
-                                            )}
+                                            <Select
+                                                options={rooms?.map((room) => {
+                                                    return {
+                                                        value: room.room_id,
+                                                        label: "Phòng " + room.room_name,
+                                                    };
+                                                })}
+                                                onChange={handleChangeRoom}
+                                            />
                                         </Form.Item>
                                         <Form.Item label="Giá">
                                             <Input value={price} />
